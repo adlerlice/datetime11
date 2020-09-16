@@ -19,41 +19,15 @@ struct Datetime //вводим структуру с данными времен
 };
 
 struct Datedelta {
-	int day;
-	int mounth;
-	int year;
-	int sec;
-	int min;
-	int hour;
+	int day=1;
+	int mounth=2;
+	int year=20;
+	int sec=5;
+	int min=16;
+	int hour=13;
 };
 
-void Summa(struct Datetime first, struct Datedelta second)
-{
-
-
-	int diffrence;
-
-	diffrence = first.tm_mday + second.day;
-	cout << "Промежуток равен =" << diffrence;
-
-}
-
-
-int main()
-{
-	setlocale(LC_ALL, "Russian");
-	Datetime first;
-	
-
-	cout << "Введите дату и время" << "\n";
-	cin >> first.tm_mday >> first.tm_mon >> first.tm_year >> first.tm_sec >> first.tm_min >> first.tm_hour;
-	
-
-
-	return 0;
-}
-
-void Datedelta (struct Datedelta second)
+/*void Datedelta(struct Datedelta second)
 {
 	second.day = 1;
 	second.mounth = 3;
@@ -62,7 +36,53 @@ void Datedelta (struct Datedelta second)
 	second.min = 5;
 	second.hour = 6;
 
+}*/
+
+
+/*void Summa(struct Datetime first, struct Datedelta second)
+{
+
+
+	int diffrence;
+
+	diffrence = first.tm_mday + second.day;
+	cout << "Промежуток равен =" << diffrence;
+
+}*/
+
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	Datetime first;
+	Datedelta second;
+
+	cout << "Введите дату и время" << "\n";
+	cout << "День:";
+	cin >> first.tm_mday;
+	cout <<"\n"<< "Месяц:";
+	cin >> first.tm_mon;
+	cout << "\n" << "Год:";
+	cin >> first.tm_year;
+	cout << "\n" << "Секунда:";
+	cin >> first.tm_sec;
+	cout << "\n" << "Минута:";
+	cin >> first.tm_min;
+	cout << "\n" << "Час:"<<"\n";
+	cin>> first.tm_hour;
+	
+
+
+	int diffrence;
+
+	diffrence = first.tm_mday + second.day;
+	cout << "День, через заданный промежуток равна" << diffrence;
+
+
+
+	return 0;
 }
+
 
 
 
