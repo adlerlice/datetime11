@@ -1,98 +1,185 @@
 ﻿#include <iostream>
-#include <ctime>
-#include<math.h>
+#include <fstream>
 
-//void printInformation(struct Datetime);
-//void firstQuestion(struct Datedelta);
-void Summa(struct Datetime, struct Datedelta);
 using namespace std;
 
-//хотелось бы создать функцию со структурой, но видимо нет.
-struct Datetime //вводим структуру с данными времени
+//Структура дата-время
+struct datetime
 {
-	int tm_mday;
-	int tm_mon;
-	int tm_year;
-	int tm_hour;
-	int tm_min;
-	int tm_sec;
+	//Поля
+	int year,
+		month,
+		day,
+		hour,
+		minute,
+		second;
+
+	//Метод вывода на экран
+	void Show()
+	{
+		cout << endl << "NOW: " << day << "." << month << "." << year << "  TIME: " << hour << ":" << minute << ":" << second << endl;
+	}
+
+
+	//Метод, переводящий дату объекта, имеющего структуру дату-время, на следующий день
+	void Next_date()
+	{
+		day++;  //Добавляем день
+		//А дальше проверяем случаи с високосными годами, концами месяцев и конца года
+		if (day > 28)
+		{
+			if ((day == 29) && (month == 2) && (year % 4 != 0))
+			{
+				day = 1;
+				month++;
+			}
+			else if ((day == 30) && (month == 2))
+			{
+				day = 1;
+				month++;
+			}
+			else if (day == 31)
+			{
+				if ((month != 3) || (month != 5) || (month != 7) || (month != 8) || (month != 10) || (month != 12))
+				{
+					day = 1;
+					month++;
+				}
+			}
+			else if (day > 31)
+			{
+				day = 1;
+				month++;
+				if (month > 12)
+				{
+					month = 1;
+					year++;
+				}
+			}
+		}
+	}
+
+	//Метод, возвращающий дату объекта на день назад
+	void Prev_date()
+	{
+		day--; //Отнимаем один день
+		//Проверяем случаи високосных годов и т.д.
+		if (day == 0)
+		{
+			if ((month == 3) && (year % 4 != 0))
+			{
+				day = 28;
+				month--;
+			}
+			else if ((month == 3) && (year % 4 == 0))
+			{
+				day = 29;
+				month--;
+			}
+			else if ((month - 1 == 3) || (month - 1 == 5) || (month - 1 == 7) || (month - 1 == 8) || (month - 1 == 10) || (month - 1 == 0))
+			{
+				day = 31;
+				month--;
+				if (month == 0)
+				{
+					month = 12;
+					year--;
+				}
+			}
+			else
+			{
+				day = 30;
+				month--;
+			}
+		}
+	}
+
 };
 
-struct Datedelta {
-	int day=1;
-	int mounth=2;
-	int year=20;
-	int sec=5;
-	int min=16;
-	int hour=13;
-};
-
-/*void Datedelta(struct Datedelta second)
-{
-	second.day = 1;
-	second.mounth = 3;
-	second.year = 2;
-	second.sec = 30;
-	second.min = 5;
-	second.hour = 6;
-
-}*/
-
-
-/*void Summa(struct Datetime first, struct Datedelta second)
-{
-
-
-	int diffrence;
-
-	diffrence = first.tm_mday + second.day;
-	cout << "Промежуток равен =" << diffrence;
-
-}*/
-
+//--------------------------------------------------------------
 
 int main()
 {
-	setlocale(LC_ALL, "Russian");
-	Datetime first;
-	Datedelta second;
+	setlocale(LC_ALL, "");
+	//Открываем файл
+	ifstream fin("input.txt");
 
-	cout << "Введите дату и время" << "\n";
-	cout << "День:";
-	cin >> first.tm_mday;
-	cout <<"\n"<< "Месяц:";
-	cin >> first.tm_mon;
-	cout << "\n" << "Год:";
-	cin >> first.tm_year;
-	cout << "\n" << "Секунда:";
-	cin >> first.tm_sec;
-	cout << "\n" << "Минута:";
-	cin >> first.tm_min;
-	cout << "\n" << "Час:"<<"\n";
-	cin>> first.tm_hour;
-	
+	//Если файл не открылся
+	if (!fin.is_open())
+		cout << "Файл не был отрыт!" << endl;
+
+	//-----Подсчёт записей в файле-------
+
+	datetime temp;  //Вспомогательнй объект дата-время
+	int n = 0;      //Количество записей в файле
+
+	//Пока файл не кончится
+	while (!fin.eof())
+	{
+		//Считываем строки и подсчитываем их количество (одна строка = одна дата)
+		fin >> temp.day >> temp.month >> temp.year >> temp.hour >> temp.minute >> temp.second;
+		n++;
+	}
+
+	fin.close(); //Закрываем файл
+
+	//-----Считываем записи из файла в массив------
+
+	//Создаём днамически массив по найденному количеству записей в файле
+	datetime* DT;
+	DT = new datetime[n];
+
+	fin.open("input.txt"); //Снова открываем файл
+
+	int i = 0;
+	while (!fin.eof())  //Пока файл не закончится
+	{
+		//Считываем каждую дату в отдельный элемент массива, где каждый элемент является объектов дата-время
+		fin >> DT[i].day >> DT[i].month >> DT[i].year >> DT[i].hour >> DT[i].minute >> DT[i].second;
+		i++;
+	}
+
+	//--------Выводим на экран записи----------------
+	cout << "Records from file" << endl;
+	for (int i = 0; i < n; i++)
+	{
+		cout << endl << i + 1 << "  NOW DATE: " << DT[i].day << "." << DT[i].month << "." << DT[i].year;
+		DT[i].Next_date();
+		cout << "  Next date: " << DT[i].day << "." << DT[i].month << "." << DT[i].year;
+		DT[i].Prev_date();
+		DT[i].Prev_date();
+		cout << "  Previous date: " << DT[i].day << "." << DT[i].month << "." << DT[i].year;
+		DT[i].Next_date();
+		cout << endl;
+	}
+
+	//--------Выполняем задание варианта 3---------------------
+	cout << endl << endl << "Records for task #3" << endl;
+
+	int today;  //месяц до следующего дня
+	int nextday; //месяц следующего дня
+
+	for (int i = 0; i < n; i++)
+	{
+		today = DT[i].month;
+		DT[i].Next_date();
+		nextday = DT[i].month;
+		DT[i].Prev_date();
+
+		//Если разность месяцев равна нулю, значит следующий день не пришёл на новый месяц. Выводим эту дату.
+		if (today - nextday == 0)
+		{
+			cout << endl;
+			cout << i + 1 << "  NOW DATE: " << DT[i].day << "." << DT[i].month << "." << DT[i].year;
+			DT[i].Next_date();
+			cout << "  Next date: " << DT[i].day << "." << DT[i].month << "." << DT[i].year;
+			DT[i].Prev_date();
+		}
 
 
-	int diffrence;
-
-	diffrence = first.tm_mday + second.day;
-	cout << "День, через заданный промежуток равна" << diffrence;
-
+	}
 
 
 	return 0;
 }
 
-
-
-
-/*void printInformation(struct Datetime date)
-{
-
-	cout << "Your datetime is:" << "\n";
-	/*cout<< date.tm_mday <<"."<< date.tm_mon << "." << date.tm_year << "\n" << date.tm_sec << "." << date.tm_min << ".";
-	cout<< date.tm_hour;*/
-	/*Summa(first, second);
-	cout << diffrence;
-	return diffrence;
-}*/
